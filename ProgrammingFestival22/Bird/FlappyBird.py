@@ -1,5 +1,7 @@
-import pygame
+import pygame, time, math , random
 import random
+import pdb
+import sys
 
 pygame.init()
 
@@ -7,7 +9,7 @@ def main():
     #Screen define
     WIDTH, HEIGHT = 864, 768
     WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("Flappy Bird!")
+    pygame.display.set_caption("Flappy Talker!")
 
     #Game variables
     clock = pygame.time.Clock()
@@ -21,14 +23,85 @@ def main():
     last_pipe = pygame.time.get_ticks() - PIPE_FREQUENCY
     score = 0
     pass_pipe = False
-
+    
     FONT = pygame.font.SysFont("Bauhaus 93", 60)
+    INTRO_FONT = pygame.font.SysFont("Bauhaus 93", 90)
     WHITE = (255, 255, 255)
+    BLACK = (0, 0, 0)
+    INTRO_COLOR = "#55c0cb"
 
     #Load images
     BG = pygame.image.load("Bird/Stuff/back3.png")
     GROUND = pygame.image.load("Bird/Stuff/ground.png")
+    START_BUTTON = pygame.image.load("Bird/Stuff/StartButton.png")
     RESTART_BUTTON = pygame.image.load("Bird/Stuff/restart.png")
+
+
+
+    def loading_screen():
+        LOADING_BG = pygame.image.load("Bird/Stuff/LoadingBarBackground.png")
+        LOADING_BAR = pygame.image.load("Bird/Stuff/LoadingBar.png")
+        LOADING_BG_RECT = LOADING_BG.get_rect(center=(425, 450))
+        LOADING_BAR_RECT = LOADING_BAR.get_rect(midleft=(0, 450))
+        loading_finished = True
+        loading_progress = 0
+        loading_bar_width = 8
+
+        while loading_finished:
+            WIN.fill("#0d0e2e")
+            draw_score("Flappy Talker", INTRO_FONT, BLACK, 150, 200)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+            loading_progress += 0.7
+            loading_bar_width = math.ceil(loading_progress)
+            LOADING_BAR = pygame.transform.scale(LOADING_BAR, (int(loading_bar_width), 150))
+            LOADING_BAR_RECT = LOADING_BAR.get_rect(midleft = (60, 450))
+            WIN.blit(LOADING_BG, LOADING_BG_RECT)
+            WIN.blit(LOADING_BAR, LOADING_BAR_RECT)
+            pygame.display.update()
+            color = ["#"+''.join([random.choice('0123456789ABCDEF') for j in range(6)]) for i in range(30)]
+            if loading_progress >= 730:
+                for i in range(20):
+                    time.sleep(0.1)
+                    WIN.fill(color[i])
+                    loading_progress = random.randint(0, 730)
+                    loading_bar_width = math.ceil(loading_progress)
+                    LOADING_BAR = pygame.transform.scale(LOADING_BAR, (int(loading_bar_width), 150))
+                    WIN.blit(LOADING_BG, LOADING_BG_RECT)
+                    WIN.blit(LOADING_BAR, LOADING_BAR_RECT)
+                    draw_score("Flappy Talker", INTRO_FONT, BLACK, 150, 200)
+                    pygame.display.update()
+
+
+                loading_finished = False
+
+        intro()
+
+
+            
+            
+            
+
+    def intro():
+        WIN.fill(INTRO_COLOR)
+        intro = True
+
+        while intro:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                    
+            
+            draw_score("Flappy Talker", INTRO_FONT, BLACK, 150, 200) 
+            pygame.display.update()
+
+            if start_button.draw():
+                intro = False
+                
+                
 
     #Drawing score function
     def draw_score(text, font, text_color, x, y):
@@ -39,7 +112,7 @@ def main():
         pipe_group.empty()
         flappy.rect.x = 100
         flappy.rect.y = HEIGHT // 2
-        return 0
+        intro()
 
     #Bird class
     class Bird(pygame.sprite.Sprite):
@@ -107,6 +180,7 @@ def main():
             if self.rect.right < 0:
                 self.kill()
 
+    #The class of all the buttons used in the game
     class Button():
         def __init__(self, x, y, img):
             self.image = img
@@ -114,7 +188,7 @@ def main():
             self.rect.topleft = (x, y)
 
         def draw(self):
-            restart_action = False
+            action = False
 
             #Draw the restart button on the screen
             WIN.blit(self.image, (self.rect.x, self.rect.y))
@@ -125,8 +199,8 @@ def main():
             #Bumping check
             if self.rect.collidepoint(pos):
                 if pygame.mouse.get_pressed()[0] == 1:
-                    restart_action = True
-            return restart_action
+                    action = True
+            return action
 
 
 
@@ -137,8 +211,10 @@ def main():
     flappy = Bird(100, int(HEIGHT / 2))
     bird_group.add(flappy)
 
-    button = Button(WIDTH // 2 - 50, HEIGHT // 2 - 100, RESTART_BUTTON)
+    start_button = Button(WIDTH // 2 - 170, HEIGHT // 2, START_BUTTON)
+    restart_button = Button(WIDTH // 2 - 50, HEIGHT // 2 - 100, RESTART_BUTTON)
 
+    loading_screen()
     run = True
     while run:
         clock.tick(FPS)
@@ -146,6 +222,7 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
                 pygame.quit()
+                sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN and not flying and not game_over:
                 flying = True
 
@@ -202,9 +279,10 @@ def main():
 
         #Reset the game when it's over
         if game_over:
-            if button.draw():
+            if restart_button.draw():
                 game_over = False
-                score = reset_game()
+                score = 0
+                reset_game()
         
         pygame.display.update()
 
