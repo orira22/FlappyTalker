@@ -1,8 +1,10 @@
 import pygame, time, math , random
 import random
+import requests
 import pdb
 import sys
 
+requests.get('http://localhost:3000/score')
 pygame.mixer.init()
 pygame.init()
 
@@ -25,6 +27,7 @@ def main():
     last_pipe = pygame.time.get_ticks() - PIPE_FREQUENCY
     score = 0
     pass_pipe = False
+    best_world_score = 0
     
     FONT = pygame.font.SysFont("Bauhaus 93", 60)
     INTRO_FONT = pygame.font.SysFont("Bauhaus 93", 90)
@@ -83,7 +86,8 @@ def main():
 
 
                 loading_finished = False
-
+        best_world_score = int(requests.get('http://localhost:3000/score').text.split('\n', 1)[0])
+        print(best_world_score)
         intro()
 
     def death():
@@ -102,6 +106,7 @@ def main():
             
             
     def intro():
+        best_world_score = int(requests.get('http://localhost:3000/score').text.split('\n', 1)[0])
         global death_sound_counter
         death_sound_counter = 0
         WIN.fill(INTRO_COLOR)
@@ -109,6 +114,7 @@ def main():
         ANIMATION_IMGS = []
         for i in range (1, 20):
             ANIMATION_IMGS.append(pygame.image.load(f"Stuff/intro{i}.png"))
+            best_world_score = int(requests.get('http://localhost:3000/score').text.split('\n', 1)[0])
         index = 0
         counter = 0
         cooldawn = 27
@@ -131,6 +137,7 @@ def main():
             current_img = ANIMATION_IMGS[index]
             WIN.blit(current_img, (300, 0))
             draw_score("Flappy Talker", INTRO_FONT, BLACK, 150, 240)
+            draw_score("worlds best score: " + str(best_world_score), INTRO_FONT, BLACK, 40, 600)
             if start_button.draw():
                 intro = False
             pygame.display.update()
@@ -143,7 +150,8 @@ def main():
         img = font.render(text, True, text_color)
         WIN.blit(img, (x, y))
 
-    def reset_game():
+    def reset_game(score):
+        requests.get(f'http://localhost:3000/score?score={score}')
         pipe_group.empty()
         flappy.rect.x = 100
         flappy.rect.y = HEIGHT // 2
@@ -319,8 +327,8 @@ def main():
             death()
             if restart_button.draw():
                 game_over = False
-                score = 0
-                reset_game()
+                reset_game(score)
+                score = 0  
         
         pygame.display.update()
 
