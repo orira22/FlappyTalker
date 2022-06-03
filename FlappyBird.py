@@ -3,8 +3,8 @@ import random
 import requests
 import pdb
 import sys
-
-requests.get('http://localhost:3000/score')
+try: requests.get('https://flappytalker.herokuapp.com/score')
+except: pass
 pygame.mixer.init()
 pygame.init()
 
@@ -47,6 +47,20 @@ def main():
     JUMP_SOUND = pygame.mixer.Sound('Stuff/jump.wav')
 
 
+    def update_server(score_var=None):
+        if score_var:
+            try:
+                requests.get(f'https://flappytalker.herokuapp.com/score?score={score_var}')
+            except:
+                pass
+        else:
+            try:
+                return requests.get('https://flappytalker.herokuapp.com/score').text.split('\n', 1)[0]
+            except:
+                return -1
+
+
+
 
     def loading_screen():
         LOADING_BG = pygame.image.load("Stuff/LoadingBarBackground.png")
@@ -86,7 +100,7 @@ def main():
 
 
                 loading_finished = False
-        best_world_score = int(requests.get('http://localhost:3000/score').text.split('\n', 1)[0])
+        best_world_score = int(update_server()) or -1
         print(best_world_score)
         intro()
 
@@ -95,18 +109,9 @@ def main():
         if death_sound_counter == 0:
             game_over_sound.play()
             death_sound_counter += 1
-    def jump():
-        global jump_sound_counter
-        if jump_sound_counter == 0:
-            JUMP_SOUND.play()
-            jump_sound_counter += 1
-            print(jump_sound_counter)
 
-
-            
-            
     def intro():
-        best_world_score = int(requests.get('http://localhost:3000/score').text.split('\n', 1)[0])
+        best_world_score = int(update_server())
         global death_sound_counter
         death_sound_counter = 0
         WIN.fill(INTRO_COLOR)
@@ -114,7 +119,8 @@ def main():
         ANIMATION_IMGS = []
         for i in range (1, 20):
             ANIMATION_IMGS.append(pygame.image.load(f"Stuff/intro{i}.png"))
-            best_world_score = int(requests.get('http://localhost:3000/score').text.split('\n', 1)[0])
+        if best_world_score != -1:
+            best_world_score = int(update_server())
         index = 0
         counter = 0
         cooldawn = 27
@@ -135,9 +141,10 @@ def main():
                 if index >= 19:
                     index = 0
             current_img = ANIMATION_IMGS[index]
-            WIN.blit(current_img, (300, 0))
-            draw_score("Flappy Talker", INTRO_FONT, BLACK, 150, 240)
-            draw_score("worlds best score: " + str(best_world_score), INTRO_FONT, BLACK, 40, 600)
+            WIN.blit(current_img, (300, -20))
+            draw_score("Flappy Talker", INTRO_FONT, BLACK, 150, 200)
+            draw_score("worlds best score:", INTRO_FONT, BLACK, 80, 530)
+            draw_score(str(best_world_score), INTRO_FONT, BLACK, WIDTH//2-70, 650)
             if start_button.draw():
                 intro = False
             pygame.display.update()
@@ -151,7 +158,7 @@ def main():
         WIN.blit(img, (x, y))
 
     def reset_game(score):
-        requests.get(f'http://localhost:3000/score?score={score}')
+        update_server(score)
         pipe_group.empty()
         flappy.rect.x = 100
         flappy.rect.y = HEIGHT // 2
@@ -256,7 +263,7 @@ def main():
     flappy = Bird(100, int(HEIGHT / 2))
     bird_group.add(flappy)
 
-    start_button = Button(WIDTH // 2 - 170, HEIGHT // 2 + 30, START_BUTTON)
+    start_button = Button(WIDTH // 2 - 170, HEIGHT // 2 - 40, START_BUTTON)
     restart_button = Button(WIDTH // 2 - 50, HEIGHT // 2 - 100, RESTART_BUTTON)
 
     loading_screen()
