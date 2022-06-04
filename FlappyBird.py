@@ -22,7 +22,7 @@ def main():
     ground_speed = 4
     flying = False
     game_over = False
-    PIPE_GAP = 150
+    PIPE_GAP = 160
     PIPE_FREQUENCY = 1500 #In milliseconds
     last_pipe = pygame.time.get_ticks() - PIPE_FREQUENCY
     score = 0
@@ -70,6 +70,7 @@ def main():
         loading_finished = True
         loading_progress = 0
         loading_bar_width = 8
+        JUMP_SOUND.set_volume(0.2)
 
         while loading_finished:
             WIN.fill("#0d0e2e")
@@ -143,8 +144,8 @@ def main():
             current_img = ANIMATION_IMGS[index]
             WIN.blit(current_img, (300, -20))
             draw_score("Flappy Talker", INTRO_FONT, BLACK, 150, 200)
-            draw_score("worlds best score:", INTRO_FONT, BLACK, 80, 530)
-            draw_score(str(best_world_score), INTRO_FONT, BLACK, WIDTH//2-70, 650)
+            draw_score("world's best score:", INTRO_FONT, LIGHT_GREEN, 80, 530)
+            draw_score(str(best_world_score), INTRO_FONT, LIGHT_GREEN, WIDTH//2-70, 650)
             if start_button.draw():
                 intro = False
             pygame.display.update()
@@ -218,7 +219,7 @@ def main():
     class Pipe(pygame.sprite.Sprite):
         def __init__(self, x, y, position):
             pygame.sprite.Sprite.__init__(self)
-            self.image = pygame.image.load("Stuff/pipe.png")
+            self.image = pygame.image.load("Stuff/pipe2.png")
             self.rect = self.image.get_rect()
             #Position 1 is from the top, and -1 is from the bottom
             if position == 1:
