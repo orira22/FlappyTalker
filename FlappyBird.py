@@ -3,8 +3,8 @@ import random
 import requests
 import pdb
 import sys
-try: requests.get('https://flappytalker.herokuapp.com/score')
-except: pass
+from pypresence import Presence #pip install pypresence
+
 pygame.mixer.init()
 pygame.init()
 
@@ -17,6 +17,7 @@ def main():
 
     #Game variables
     clock = pygame.time.Clock()
+    diccord_client_id = "982617952325074954"
     FPS = 60
     ground_movement = 0
     ground_speed = 4
@@ -28,6 +29,7 @@ def main():
     score = 0
     pass_pipe = False
     best_world_score = 0
+    last_score = 0
     
     FONT = pygame.font.SysFont("Bauhaus 93", 60)
     INTRO_FONT = pygame.font.SysFont("Bauhaus 93", 90)
@@ -58,11 +60,19 @@ def main():
                 return requests.get('https://flappytalker.herokuapp.com/score').text.split('\n', 1)[0]
             except:
                 return -1
-
+    def update_discord_status(large_image,large_text,details,state):
+        RPC.update(
+            large_image = large_image, #name of your asset
+            large_text = large_text,
+            details = details,
+            state = state,
+            start = start
+        )
 
 
 
     def loading_screen():
+        update_discord_status("logo","Flappy Talker","on loading screen","loading")
         LOADING_BG = pygame.image.load("Stuff/LoadingBarBackground.png")
         LOADING_BAR = pygame.image.load("Stuff/LoadingBar.png")
         LOADING_BG_RECT = LOADING_BG.get_rect(center=(425, 450))
@@ -107,11 +117,13 @@ def main():
 
     def death():
         global death_sound_counter
+        update_discord_status("logo","Flappy Talker","on the fild","dead")
         if death_sound_counter == 0:
             game_over_sound.play()
             death_sound_counter += 1
 
     def intro():
+        update_discord_status("logo","Flappy Talker","on main screen screen","last score: "+str(last_score))
         best_world_score = int(update_server())
         global death_sound_counter
         death_sound_counter = 0
@@ -323,6 +335,7 @@ def main():
                 pipe_group.add(bottom_pipe)
                 pipe_group.add(top_pipe)
                 last_pipe = current_time
+                update_discord_status("logo","Flappy Talker","on the field","score: "+str(score))
 
             #Move the ground
             ground_movement -= ground_speed
@@ -336,9 +349,15 @@ def main():
             if restart_button.draw():
                 game_over = False
                 reset_game(score)
+                last_score = score
                 score = 0  
         
         pygame.display.update()
 
 if __name__ == "__main__":
+    try: requests.get('https://flappytalker.herokuapp.com/score')
+    except: pass
+    start = int(time.time())
+    RPC = Presence("982617952325074954")
+    RPC.connect()
     main()
