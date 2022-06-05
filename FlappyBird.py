@@ -1,8 +1,4 @@
-import pygame, time, math , random
-import random
-import requests
-import pdb
-import sys
+import pygame, time, math , random, sys, requests
 from pypresence import Presence #pip install pypresence
 
 pygame.mixer.init()
@@ -43,6 +39,7 @@ def main():
     GROUND = pygame.image.load("Stuff/ground.png")
     START_BUTTON = pygame.image.load("Stuff/StartButton.png")
     RESTART_BUTTON = pygame.image.load("Stuff/restart.png")
+    tutorial = pygame.image.load("Stuff/tutorial.png") 
 
     #sounds
     game_over_sound = pygame.mixer.Sound('Stuff/gameOverSound.wav')
@@ -138,8 +135,8 @@ def main():
         counter = 0
         cooldawn = 27
         current_img = ANIMATION_IMGS[0]
-        pygame.mixer.music.load('Stuff/intro music.mp3')
-        pygame.mixer.music.set_volume(float(0.2)) # 0.0 - 1.0
+        pygame.mixer.music.load('Stuff/intromusic.wav')
+        pygame.mixer.music.set_volume(float(0.1)) # 0.0 - 1.0
         pygame.mixer.music.play(-1)
         while intro:
             WIN.fill(INTRO_COLOR)
@@ -171,11 +168,13 @@ def main():
         WIN.blit(img, (x, y))
 
     def reset_game(score):
+        global clicks
         update_server(score)
         pipe_group.empty()
         flappy.rect.x = 100
         flappy.rect.y = HEIGHT // 2
         intro()
+        clicks = 0
 
     #Bird class
     class Bird(pygame.sprite.Sprite):
@@ -203,12 +202,14 @@ def main():
                     self.rect.y += int(self.velocity)
             #Jump, animation and rotation of the bird if game is not over
             if not game_over:
+                global clicks
                 #Jumping
                 if pygame.mouse.get_pressed()[0] == 1 and not(self.clicked):
                     self.clicked = True
                     self.velocity = -10
                     if intro != True:
                         JUMP_SOUND.play()
+                    clicks += 1
                 elif pygame.mouse.get_pressed()[0] == 0:
                     self.clicked = False
 
@@ -293,6 +294,8 @@ def main():
 
         #Draw background
         WIN.blit(BG, (0, 0))
+        if clicks == 1:
+            WIN.blit(tutorial, (100, 300))
         
         #Bird animation
         bird_group.draw(WIN)
@@ -360,4 +363,5 @@ if __name__ == "__main__":
     start = int(time.time())
     RPC = Presence("982617952325074954")
     RPC.connect()
+    clicks = 0
     main()
