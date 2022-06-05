@@ -9,7 +9,7 @@ def main():
     #Screen define
     WIDTH, HEIGHT = 864, 768
     WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_icon(pygame.image.load("FlappyTalker/Stuff/icon.png"))
+    pygame.display.set_icon(pygame.image.load("Stuff/icon.png"))
     pygame.display.set_caption("Flappy Talker!")
 
     #Game variables
@@ -36,18 +36,18 @@ def main():
     INTRO_COLOR = "#55c0cb"
 
     #Images loading
-    BG = pygame.image.load("FlappyTalker/Stuff/back.png")
-    GROUND = pygame.image.load("FlappyTalker/Stuff/ground.png")
-    START_BUTTON = pygame.image.load("FlappyTalker/Stuff/StartButton.png")
-    RESTART_BUTTON = pygame.image.load("FlappyTalker/Stuff/restart.png")
-    TUTORIAL = pygame.image.load("FlappyTalker/Stuff/tutorial.png")
-    MUTE_BUTTON = pygame.image.load("FlappyTalker/Stuff/mute.png")
-    UNMUTE_BUTTON = pygame.image.load("FlappyTalker/Stuff/unmute.png")
+    BG = pygame.image.load("Stuff/back.png")
+    GROUND = pygame.image.load("Stuff/ground.png")
+    START_BUTTON = pygame.image.load("Stuff/StartButton.png")
+    RESTART_BUTTON = pygame.image.load("Stuff/restart.png")
+    TUTORIAL = pygame.image.load("Stuff/tutorial.png")
+    MUTE_BUTTON = pygame.image.load("Stuff/mute.png")
+    UNMUTE_BUTTON = pygame.image.load("Stuff/unmute.png")
     
 
     #Sounds 
-    GAME_OVER_SOUND = pygame.mixer.Sound('FlappyTalker/Stuff/gameOverSound.wav')
-    JUMP_SOUND = pygame.mixer.Sound('FlappyTalker/Stuff/jump.wav')
+    GAME_OVER_SOUND = pygame.mixer.Sound('Stuff/gameOverSound.wav')
+    JUMP_SOUND = pygame.mixer.Sound('Stuff/jump.wav')
     #Sounds volume 0.0 -- 1.0
     JUMP_SOUND.set_volume(float(0.1))
     pygame.mixer.music.set_volume(float(0.1))
@@ -84,8 +84,8 @@ def main():
     #The function which displays the fake loading screen before the game starts
     def loading_screen():
         update_discord_status("logo", "Flappy Talker", "On loading screen", "loading...")
-        LOADING_BG = pygame.image.load("FlappyTalker/Stuff/LoadingBarBackground.png")
-        LOADING_BAR = pygame.image.load("FlappyTalker/Stuff/LoadingBar.png")
+        LOADING_BG = pygame.image.load("Stuff/LoadingBarBackground.png")
+        LOADING_BAR = pygame.image.load("Stuff/LoadingBar.png")
         LOADING_BG_RECT = LOADING_BG.get_rect(center=(425, 450))
         LOADING_BAR_RECT = LOADING_BAR.get_rect(midleft=(0, 450))
         loading_finished = True
@@ -141,14 +141,14 @@ def main():
         intro = True
         ANIMATION_IMGS = []
         for i in range (1, 20):
-            ANIMATION_IMGS.append(pygame.image.load(f"FlappyTalker/Stuff/intro{i}.png"))
+            ANIMATION_IMGS.append(pygame.image.load(f"Stuff/intro{i}.png"))
         if best_world_score != -1:
             best_world_score = int(update_server())
         index = 0 #Used for creating the animation - for taking photo after a photo by the index in the list
         counter = 0 #Used for gradually increase the variable until it reaches the animation speed 
         ANIMATION_SPEED = 27
         current_img = ANIMATION_IMGS[0]
-        pygame.mixer.music.load('FlappyTalker/Stuff/introMusic.wav')
+        pygame.mixer.music.load('Stuff/introMusic.wav')
         pygame.mixer.music.play(-1)
         while intro:
             WIN.fill(INTRO_COLOR) #Erases the previous images of the animation from the screen
@@ -207,7 +207,7 @@ def main():
             self.index = 0
             self.counter = 0
             for num in range(1, 4):
-                img = pygame.image.load(f"FlappyTalker/Stuff/bird{num}.png") #Creates a list with the images required for talker wings' animation
+                img = pygame.image.load(f"Stuff/bird{num}.png") #Creates a list with the images required for talker wings' animation
                 self.images.append(img)
             self.image = self.images[self.index]
             self.rect = self.image.get_rect()
@@ -255,7 +255,7 @@ def main():
     class Pipe(pygame.sprite.Sprite):
         def __init__(self, x, y, position):
             pygame.sprite.Sprite.__init__(self)
-            self.image = pygame.image.load("FlappyTalker/Stuff/pipe2.png")
+            self.image = pygame.image.load("Stuff/pipe2.png")
             self.rect = self.image.get_rect()
             #Position 1 is a pipe from the top, and -1 is a pipe from the bottom
             if position == 1:
