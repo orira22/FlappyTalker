@@ -43,6 +43,9 @@ def main():
     TUTORIAL = pygame.image.load("Stuff/tutorial.png")
     MUTE_BUTTON = pygame.image.load("Stuff/mute.png")
     UNMUTE_BUTTON = pygame.image.load("Stuff/unmute.png")
+    global TeamLogo
+    TeamLogo = pygame.image.load("Stuff/TeamLogo.png")
+    TeamLogo = pygame.transform.scale(TeamLogo, (200, 200))
     
 
     #Sounds 
@@ -86,6 +89,7 @@ def main():
 
     #The function which displays the fake loading screen before the game starts
     def loading_screen():
+        global TeamLogo
         update_discord_status("logo", "Flappy Talker", "On loading screen", "loading...")
         LOADING_BG = pygame.image.load("Stuff/LoadingBarBackground.png")
         LOADING_BAR = pygame.image.load("Stuff/LoadingBar.png")
@@ -108,6 +112,7 @@ def main():
             LOADING_BAR_RECT = LOADING_BAR.get_rect(midleft = (60, 450))
             WIN.blit(LOADING_BG, LOADING_BG_RECT)
             WIN.blit(LOADING_BAR, LOADING_BAR_RECT)
+            WIN.blit(TeamLogo, (325, 0))
             pygame.display.update()
             color = ["#"+''.join([random.choice('0123456789ABCDEF') for j in range(6)]) for i in range(30)]
             if loading_progress >= 730:
@@ -120,11 +125,13 @@ def main():
                     WIN.blit(LOADING_BG, LOADING_BG_RECT)
                     WIN.blit(LOADING_BAR, LOADING_BAR_RECT)
                     draw_text("Flappy Talker", INTRO_FONT, BLACK, 150, 200)
+                    WIN.blit(TeamLogo, (325, 0))
                     pygame.display.update()
 
                 loading_finished = False 
         best_world_score = int(update_server()) or -1
         print(best_world_score)
+        TeamLogo = pygame.transform.scale(TeamLogo, (100, 100))
         intro()
 
     def change_volume(vol):
@@ -171,6 +178,7 @@ def main():
             draw_text("Flappy Talker", INTRO_FONT, BLACK, 150, 200)
             draw_text("world's best score:", INTRO_FONT, LIGHT_GREEN, 80, 530)
             draw_text(str(best_world_score), INTRO_FONT, LIGHT_GREEN, WIDTH // 2 - 70, 650)
+            WIN.blit(TeamLogo, (765, 0))
             if mute_button.draw2():
                 if mute == False:
                     mute_button.change_image(MUTE_BUTTON)
