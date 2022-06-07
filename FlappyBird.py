@@ -51,7 +51,7 @@ def main():
     #Sounds volume 0.0 -- 1.0
     JUMP_SOUND.set_volume(float(0.1))
     pygame.mixer.music.set_volume(float(0.1))
-    GAME_OVER_SOUND.set_volume(float(0.1))
+    GAME_OVER_SOUND.set_volume(float(0.2))
 
     #Drawing text to the window function
     def draw_text(text, font, text_color, x, y):
@@ -73,13 +73,16 @@ def main():
 
     #The function which displays in discord when you play the game 
     def update_discord_status(large_image, large_text, details,state):
-        RPC.update(
-            large_image = large_image,
-            large_text = large_text,
-            details = details,
-            state = state,
-            start = start
-        )
+        try:
+            RPC.update(
+                large_image = large_image,
+                large_text = large_text,
+                details = details,
+                state = state,
+                start = start
+            )
+        except:
+            pass
 
     #The function which displays the fake loading screen before the game starts
     def loading_screen():
@@ -127,7 +130,7 @@ def main():
     def change_volume(vol):
         JUMP_SOUND.set_volume(float(vol))
         pygame.mixer.music.set_volume(float(vol))
-        GAME_OVER_SOUND.set_volume(float(vol))
+        GAME_OVER_SOUND.set_volume(float(vol*2))
 
     #The function which draws the lobby of the game
     def intro():
@@ -155,6 +158,7 @@ def main():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
+                    sys.exit()
                     quit()
             counter += 1
             if counter > ANIMATION_SPEED:
@@ -225,7 +229,7 @@ def main():
                     self.rect.y += int(self.velocity)
             #Jumping, animation and rotation of the bird if the game is not over
             if not game_over:
-                global clicks
+                global clicks,event
                 #Jumping
                 if pygame.mouse.get_pressed()[0] == 1 and not(self.clicked): #If the mouse has been left-clicked...
                     self.clicked = True
@@ -403,6 +407,8 @@ if __name__ == "__main__":
     except: pass
     start = int(time.time())
     RPC = Presence("982617952325074954")
-    RPC.connect()
+    try: RPC.update(start)
+    except: pass
+    print(pygame.event.get())
     clicks = 0
     main()
