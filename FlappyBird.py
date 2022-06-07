@@ -414,8 +414,9 @@ if __name__ == "__main__":
     try: requests.get('https://flappytalker.herokuapp.com/score')
     except: pass
     start = int(time.time())
-    RPC = Presence("982617952325074954")
-    try: RPC.update(start)
+    try:
+        RPC = Presence("982617952325074954")
+        RPC.update(start)
     except: pass
     print(pygame.event.get())
     clicks = 0
